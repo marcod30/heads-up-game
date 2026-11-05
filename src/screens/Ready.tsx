@@ -20,10 +20,18 @@ export function Ready({ category, motionDenied, invertTilt, onStart, onBack }: P
       </button>
 
       <div className="ready__title">
-        <span className="ready__emoji" aria-hidden>
+        <span
+          className="ready__emoji"
+          style={{ fontSize: `min(4rem, ${Math.floor(70 / (category.includes?.length ?? 1))}vw)` }}
+          aria-hidden
+        >
           {category.emoji}
         </span>
         <h2>{category.name}</h2>
+        <p className="ready__meta">
+          {category.includes && category.includes.length > 2 && <>{category.includes.join(' · ')} · </>}
+          {category.words.length} palabras
+        </p>
       </div>
 
       <ol className="howto">
