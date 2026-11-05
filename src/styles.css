@@ -79,17 +79,17 @@ button { font: inherit; color: inherit; border: 0; cursor: pointer; background: 
 }
 .card--selected .card__check { transform: scale(1); }
 
-/* Barra flotante «Jugar» sobre la navegación inferior */
-.home--selecting { padding-bottom: calc(var(--nav-h) + 120px + env(safe-area-inset-bottom)); }
+/* Botón «Jugar» sobre la navegación inferior.
+   Es «sticky»: ocupa su propio hueco al final de la lista (así nunca tapa la última fila de tarjetas)
+   y, mientras haya más contenido debajo, se queda fijo justo encima de la barra de navegación. */
 .play-bar {
-  position: fixed; z-index: 9; left: 50%;
+  position: sticky; z-index: 9;
   bottom: calc(var(--nav-h) + max(6px, env(safe-area-inset-bottom)) + 10px);
-  width: min(560px, calc(100% - 32px));
-  display: flex; flex-direction: column; align-items: center; gap: 8px;
-  transform: translate(-50%, 140%); opacity: 0; pointer-events: none;
-  transition: transform 0.25s ease, opacity 0.2s ease;
+  align-self: center; width: min(560px, 100%);
+  display: none; flex-direction: column; align-items: center; gap: 8px;
 }
-.play-bar--visible { transform: translate(-50%, 0); opacity: 1; pointer-events: auto; }
+.play-bar--visible { display: flex; animation: play-bar-in 0.25s ease; }
+@keyframes play-bar-in { from { transform: translateY(40px); opacity: 0; } }
 .play-bar__go { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 12px 18px; font-size: 1.35rem; }
 .play-bar__meta { font-family: var(--font); font-size: 0.8rem; font-weight: 700; opacity: 0.7; }
 .play-bar__clear {
