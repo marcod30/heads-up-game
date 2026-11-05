@@ -4,6 +4,8 @@ export interface Category {
   emoji: string;
   color: string;
   words: string[];
+  /** Solo en mazos combinados: nombres de las categorías que lo forman. */
+  includes?: string[];
 }
 
 export type Outcome = 'correct' | 'pass';

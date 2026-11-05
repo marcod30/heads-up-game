@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import type { Category, Settings, WordResult } from './types';
-import { CATEGORIES } from './data/categories';
+import { useMemo, useState } from 'react';
+import type { Settings, WordResult } from './types';
+import { CATEGORIES, buildDeck } from './data/categories';
 import { loadSettings, saveSettings } from './lib/utils';
 import { unlockAudio } from './lib/sound';
 import { enterImmersive, exitImmersive, requestMotionPermission } from './lib/device';
@@ -15,11 +15,23 @@ type Screen = 'home' | 'settings' | 'ready' | 'game' | 'results';
 
 export default function App() {
   const [screen, setScreen] = useState<Screen>('home');
-  const [category, setCategory] = useState<Category | null>(null);
+  // Categorías marcadas en la portada (en el orden en que se eligieron)
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [settings, setSettings] = useState<Settings>(loadSettings);
   const [results, setResults] = useState<WordResult[]>([]);
   const [motionDenied, setMotionDenied] = useState(false);
   const [round, setRound] = useState(0);
+
+  // Mazo de la partida: une las palabras de todas las categorías elegidas
+  const category = useMemo(() => {
+    const picked = selectedIds
+      .map((id) => CATEGORIES.find((c) => c.id === id))
+      .filter((c): c is (typeof CATEGORIES)[number] => Boolean(c));
+    return picked.length ? buildDeck(picked) : null;
+  }, [selectedIds]);
+
+  const toggleCategory = (id: string) =>
+    setSelectedIds((ids) => (ids.includes(id) ? ids.filter((x) => x !== id) : [...ids, id]));
 
   const updateSettings = (s: Settings) => {
     setSettings(s);
@@ -51,10 +63,11 @@ export default function App() {
         ) : (
           <Home
             categories={CATEGORIES}
-            onPick={(c) => {
-              setCategory(c);
-              setScreen('ready');
-            }}
+            selectedIds={selectedIds}
+            wordCount={category?.words.length ?? 0}
+            onToggle={toggleCategory}
+            onClear={() => setSelectedIds([])}
+            onPlay={() => category && setScreen('ready')}
           />
         )}
         <BottomNav active={tab} onChange={(t) => setScreen(t === 'settings' ? 'settings' : 'home')} />

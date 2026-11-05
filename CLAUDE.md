@@ -6,6 +6,7 @@
 - Nombra las ramas de forma descriptiva y en minúsculas con guiones, por ejemplo `ajustes-slider` o `fix-giro-ios`.
 - Sube la rama a `origin` y propón una pull request hacia `main`; la integración en `main` la decide el propietario del repositorio.
 - No hagas `push --force` a `main`.
+- No incluyas enlaces a la sesión de Claude (`claude.ai/code/...`) en commits, descripciones de pull requests ni en ningún otro sitio del repositorio.
 
 ## Proyecto
 
