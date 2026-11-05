@@ -1,13 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
-import type { Outcome } from '../types';
+export type TiltDirection = 'down' | 'up';
 
 /**
  * Detecta el giro del móvil colocado en la frente (en horizontal, pantalla mirando a los demás).
  *
  * Se calcula hacia dónde apunta la pantalla: z = cos(beta)·cos(gamma)
  *   z ≈  0  → pantalla vertical (posición de juego, neutra)
- *   z <  0  → pantalla hacia el suelo  (cabeza abajo)  → ACIERTO
- *   z >  0  → pantalla hacia el techo  (cabeza arriba) → PASAR
+ *   z <  0  → pantalla hacia el suelo  (cabeza abajo)  → 'down'
+ *   z >  0  → pantalla hacia el techo  (cabeza arriba) → 'up'
+ * Qué significa cada dirección (acierto/pasar) lo decide quien usa el hook.
  * Esta fórmula no depende de hacia qué lado esté girado el móvil en horizontal
  * y evita los saltos de ±90° que tiene gamma en esa postura.
  *
@@ -18,7 +19,7 @@ const REARM = 0.3; // ≈ 17°
 
 const toRad = (deg: number) => (deg * Math.PI) / 180;
 
-export function useTilt(enabled: boolean, onTilt: (outcome: Outcome) => void) {
+export function useTilt(enabled: boolean, onTilt: (direction: TiltDirection) => void) {
   const [sensorActive, setSensorActive] = useState(false);
   const armedRef = useRef(false); // no armamos hasta ver la posición neutra
   const cbRef = useRef(onTilt);
@@ -39,10 +40,10 @@ export function useTilt(enabled: boolean, onTilt: (outcome: Outcome) => void) {
       }
       if (z < -TRIGGER) {
         armedRef.current = false;
-        cbRef.current('correct');
+        cbRef.current('down');
       } else if (z > TRIGGER) {
         armedRef.current = false;
-        cbRef.current('pass');
+        cbRef.current('up');
       }
     };
 

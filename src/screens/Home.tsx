@@ -1,18 +1,14 @@
 import type { CSSProperties } from 'react';
-import type { Category, Settings } from '../types';
+import type { Category } from '../types';
 
 interface Props {
   categories: Category[];
-  settings: Settings;
-  onSettings: (s: Settings) => void;
   onPick: (c: Category) => void;
 }
 
-const DURATIONS = [30, 60, 90, 120];
-
-export function Home({ categories, settings, onSettings, onPick }: Props) {
+export function Home({ categories, onPick }: Props) {
   return (
-    <main className="screen home">
+    <main className="screen home with-nav">
       <header className="home__header">
         <h1 className="logo">
           ¡Adivina<span>!</span>
@@ -35,31 +31,6 @@ export function Home({ categories, settings, onSettings, onPick }: Props) {
             <span className="card__count">{c.words.length} palabras</span>
           </button>
         ))}
-      </section>
-
-      <section className="settings" aria-label="Ajustes">
-        <div className="settings__group">
-          <span className="settings__label">Tiempo</span>
-          <div className="chips">
-            {DURATIONS.map((d) => (
-              <button
-                key={d}
-                className={`chip ${settings.duration === d ? 'chip--on' : ''}`}
-                aria-pressed={settings.duration === d}
-                onClick={() => onSettings({ ...settings, duration: d })}
-              >
-                {d}s
-              </button>
-            ))}
-          </div>
-        </div>
-        <button
-          className={`chip ${settings.sound ? 'chip--on' : ''}`}
-          aria-pressed={settings.sound}
-          onClick={() => onSettings({ ...settings, sound: !settings.sound })}
-        >
-          {settings.sound ? '🔊 Sonido' : '🔇 Sin sonido'}
-        </button>
       </section>
     </main>
   );

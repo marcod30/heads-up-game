@@ -1,7 +1,7 @@
 import type { CSSProperties } from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { Category, Outcome, Settings, WordResult } from '../types';
-import { useTilt } from '../hooks/useTilt';
+import { useTilt, type TiltDirection } from '../hooks/useTilt';
 import { useWakeLock } from '../hooks/useWakeLock';
 import { shuffle, vibrate } from '../lib/utils';
 import { sounds } from '../lib/sound';
@@ -134,18 +134,29 @@ export function Game({ category, settings, onFinish, onQuit }: Props) {
     [index, words, play, finish],
   );
 
-  const { sensorActive } = useTilt(true, handleOutcome);
+  // Por defecto: cabeza abajo = acierto. Con «Invertir giro»: cabeza arriba = acierto.
+  const handleTilt = useCallback(
+    (dir: TiltDirection) => {
+      const isCorrect = settings.invertTilt ? dir === 'up' : dir === 'down';
+      handleOutcome(isCorrect ? 'correct' : 'pass');
+    },
+    [settings.invertTilt, handleOutcome],
+  );
+  const { sensorActive } = useTilt(true, handleTilt);
 
-  // Teclado para probar en el ordenador: ↓/→ acierto, ↑/← pasar
+  // Teclado para probar en el ordenador: ↓/↑ imitan la cabeza (respetan «Invertir giro»),
+  // → acierto y ← pasar siempre.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowDown' || e.key === 'ArrowRight') handleOutcome('correct');
-      if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') handleOutcome('pass');
+      if (e.key === 'ArrowDown') handleTilt('down');
+      if (e.key === 'ArrowUp') handleTilt('up');
+      if (e.key === 'ArrowRight') handleOutcome('correct');
+      if (e.key === 'ArrowLeft') handleOutcome('pass');
       if (e.key === 'Escape') onQuit();
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [handleOutcome, onQuit]);
+  }, [handleTilt, handleOutcome, onQuit]);
 
   const stageClass = ['stage', flash ? `stage--${flash}` : '', phase === 'countdown' ? 'stage--countdown' : '']
     .filter(Boolean)

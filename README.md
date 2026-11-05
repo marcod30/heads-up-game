@@ -10,10 +10,16 @@ Es una web (PWA): se abre desde el navegador, se puede instalar en la pantalla d
 3. Tus amigos te describen la palabra sin decirla.
    - **Cabeza abajo** (pantalla hacia el suelo) → ✅ acierto
    - **Cabeza arriba** (pantalla hacia el techo) → ⏭️ pasar
+   - Se puede invertir en **Ajustes → Invertir giro** (arriba = acierto, abajo = pasar).
 4. Al acabar el tiempo verás el resumen de la ronda.
 
 Sin giroscopio también se puede jugar tocando: **mitad derecha = acierto, mitad izquierda = pasar**.
-En el ordenador: flechas **↓/→** acierto, **↑/←** pasar, **Esc** salir.
+En el ordenador: **↓/↑** imitan la cabeza (respetan *Invertir giro*), **→** acierto, **←** pasar, **Esc** salir.
+
+## Ajustes
+
+Desde el engranaje de la barra inferior: duración de la ronda (30–120 s), efectos de sonido e *Invertir giro*.
+Se guardan en el propio móvil (`localStorage`).
 
 ## Stack
 

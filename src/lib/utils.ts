@@ -10,7 +10,7 @@ export function shuffle<T>(items: readonly T[]): T[] {
 }
 
 const SETTINGS_KEY = 'adivina:settings';
-export const DEFAULT_SETTINGS: Settings = { duration: 60, sound: true };
+export const DEFAULT_SETTINGS: Settings = { duration: 60, sound: true, invertTilt: false };
 
 export function loadSettings(): Settings {
   try {
@@ -27,6 +27,13 @@ export function saveSettings(s: Settings): void {
   } catch {
     /* modo privado: no pasa nada */
   }
+}
+
+/** Texto de cada gesto según si el giro está invertido. */
+export function tiltLabels(invert: boolean): { correct: string; pass: string } {
+  const down = 'Cabeza abajo ↓';
+  const up = 'Cabeza arriba ↑';
+  return invert ? { correct: up, pass: down } : { correct: down, pass: up };
 }
 
 export function vibrate(pattern: number | number[]): void {

@@ -16,4 +16,6 @@ export interface WordResult {
 export interface Settings {
   duration: number; // segundos
   sound: boolean;
+  /** false: cabeza abajo = acierto (por defecto). true: cabeza arriba = acierto. */
+  invertTilt: boolean;
 }
