@@ -1,17 +1,23 @@
 import { useMemo, useState } from 'react';
-import type { Settings, WordResult } from './types';
+import type { Category, Settings, WordResult } from './types';
 import { CATEGORIES, buildDeck } from './data/categories';
 import { loadSettings, saveSettings } from './lib/utils';
 import { unlockAudio } from './lib/sound';
 import { enterImmersive, exitImmersive, requestMotionPermission } from './lib/device';
-import { BottomNav } from './components/BottomNav';
+import { loadCustomCategories, saveCustomCategories } from './lib/customCategories';
+import { BottomNav, type Tab } from './components/BottomNav';
 import { Home } from './screens/Home';
 import { SettingsScreen } from './screens/SettingsScreen';
+import { CreateScreen } from './screens/CreateScreen';
 import { Ready } from './screens/Ready';
 import { Game } from './screens/Game';
 import { Results } from './screens/Results';
 
-type Screen = 'home' | 'settings' | 'ready' | 'game' | 'results';
+type Screen = 'home' | 'create' | 'settings' | 'ready' | 'game' | 'results';
+
+const TAB_SCREEN: Record<Tab, Screen> = { play: 'home', create: 'create', settings: 'settings' };
+// Colores disponibles para las categorías propias: los mismos que usan las de serie
+const COLORS = [...new Set(CATEGORIES.map((c) => c.color))];
 
 export default function App() {
   const [screen, setScreen] = useState<Screen>('home');
@@ -21,14 +27,33 @@ export default function App() {
   const [results, setResults] = useState<WordResult[]>([]);
   const [motionDenied, setMotionDenied] = useState(false);
   const [round, setRound] = useState(0);
+  const [customCategories, setCustomCategories] = useState<Category[]>(loadCustomCategories);
+  // Primero las propias (las más recientes arriba), después las de serie
+  const allCategories = useMemo(() => [...customCategories, ...CATEGORIES], [customCategories]);
 
   // Mazo de la partida: une las palabras de todas las categorías elegidas
   const category = useMemo(() => {
     const picked = selectedIds
-      .map((id) => CATEGORIES.find((c) => c.id === id))
-      .filter((c): c is (typeof CATEGORIES)[number] => Boolean(c));
+      .map((id) => allCategories.find((c) => c.id === id))
+      .filter((c): c is Category => Boolean(c));
     return picked.length ? buildDeck(picked) : null;
-  }, [selectedIds]);
+  }, [selectedIds, allCategories]);
+
+  /** Crea o actualiza una categoría propia. Devuelve false si no se pudo guardar. */
+  const saveCustom = (cat: Category) => {
+    const exists = customCategories.some((c) => c.id === cat.id);
+    const next = exists ? customCategories.map((c) => (c.id === cat.id ? cat : c)) : [cat, ...customCategories];
+    if (!saveCustomCategories(next)) return false;
+    setCustomCategories(next);
+    return true;
+  };
+
+  const deleteCustom = (id: string) => {
+    const next = customCategories.filter((c) => c.id !== id);
+    saveCustomCategories(next);
+    setCustomCategories(next);
+    setSelectedIds((ids) => ids.filter((x) => x !== id));
+  };
 
   const toggleCategory = (id: string) =>
     setSelectedIds((ids) => (ids.includes(id) ? ids.filter((x) => x !== id) : [...ids, id]));
@@ -54,15 +79,22 @@ export default function App() {
   };
 
   // Pantallas principales con barra de navegación inferior
-  if (screen === 'home' || screen === 'settings' || !category) {
-    const tab = screen === 'settings' ? 'settings' : 'play';
+  if (screen === 'home' || screen === 'create' || screen === 'settings' || !category) {
+    const tab: Tab = screen === 'settings' ? 'settings' : screen === 'create' ? 'create' : 'play';
     return (
       <>
         {tab === 'settings' ? (
           <SettingsScreen settings={settings} onChange={updateSettings} />
+        ) : tab === 'create' ? (
+          <CreateScreen
+            customCategories={customCategories}
+            colors={COLORS}
+            onSave={saveCustom}
+            onDelete={deleteCustom}
+          />
         ) : (
           <Home
-            categories={CATEGORIES}
+            categories={allCategories}
             selectedIds={selectedIds}
             wordCount={category?.words.length ?? 0}
             onToggle={toggleCategory}
@@ -70,7 +102,7 @@ export default function App() {
             onPlay={() => category && setScreen('ready')}
           />
         )}
-        <BottomNav active={tab} onChange={(t) => setScreen(t === 'settings' ? 'settings' : 'home')} />
+        <BottomNav active={tab} onChange={(t) => setScreen(TAB_SCREEN[t])} />
       </>
     );
   }

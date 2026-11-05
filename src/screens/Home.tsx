@@ -39,7 +39,10 @@ export function Home({ categories, selectedIds, wordCount, onToggle, onClear, on
                 {c.emoji}
               </span>
               <span className="card__name">{c.name}</span>
-              <span className="card__count">{c.words.length} palabras</span>
+              <span className="card__count">
+                {c.words.length} {c.words.length === 1 ? 'palabra' : 'palabras'}
+                {c.custom && <span className="card__tag">Tuya</span>}
+              </span>
             </button>
           );
         })}
