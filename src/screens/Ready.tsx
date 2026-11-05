@@ -1,15 +1,18 @@
 import type { CSSProperties } from 'react';
 import type { Category } from '../types';
+import { tiltLabels } from '../lib/utils';
 
 interface Props {
   category: Category;
   motionDenied: boolean;
+  invertTilt: boolean;
   onStart: () => void;
   onBack: () => void;
 }
 
-export function Ready({ category, motionDenied, onStart, onBack }: Props) {
+export function Ready({ category, motionDenied, invertTilt, onStart, onBack }: Props) {
   const insecure = !window.isSecureContext;
+  const labels = tiltLabels(invertTilt);
   return (
     <main className="screen ready" style={{ '--accent': category.color } as CSSProperties}>
       <button className="back" onClick={onBack} aria-label="Volver a categorías">
@@ -28,10 +31,10 @@ export function Ready({ category, motionDenied, onStart, onBack }: Props) {
           <strong>Pon el móvil en horizontal en tu frente</strong>, con la pantalla mirando a tus amigos.
         </li>
         <li>
-          <span className="pill pill--ok">Cabeza abajo ↓</span> si aciertas.
+          <span className="pill pill--ok">{labels.correct}</span> si aciertas.
         </li>
         <li>
-          <span className="pill pill--pass">Cabeza arriba ↑</span> para pasar.
+          <span className="pill pill--pass">{labels.pass}</span> para pasar.
         </li>
       </ol>
 

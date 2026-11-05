@@ -4,12 +4,14 @@ import { CATEGORIES } from './data/categories';
 import { loadSettings, saveSettings } from './lib/utils';
 import { unlockAudio } from './lib/sound';
 import { enterImmersive, exitImmersive, requestMotionPermission } from './lib/device';
+import { BottomNav } from './components/BottomNav';
 import { Home } from './screens/Home';
+import { SettingsScreen } from './screens/SettingsScreen';
 import { Ready } from './screens/Ready';
 import { Game } from './screens/Game';
 import { Results } from './screens/Results';
 
-type Screen = 'home' | 'ready' | 'game' | 'results';
+type Screen = 'home' | 'settings' | 'ready' | 'game' | 'results';
 
 export default function App() {
   const [screen, setScreen] = useState<Screen>('home');
@@ -39,22 +41,37 @@ export default function App() {
     setScreen(next);
   };
 
-  if (screen === 'home' || !category) {
+  // Pantallas principales con barra de navegación inferior
+  if (screen === 'home' || screen === 'settings' || !category) {
+    const tab = screen === 'settings' ? 'settings' : 'play';
     return (
-      <Home
-        categories={CATEGORIES}
-        settings={settings}
-        onSettings={updateSettings}
-        onPick={(c) => {
-          setCategory(c);
-          setScreen('ready');
-        }}
-      />
+      <>
+        {tab === 'settings' ? (
+          <SettingsScreen settings={settings} onChange={updateSettings} />
+        ) : (
+          <Home
+            categories={CATEGORIES}
+            onPick={(c) => {
+              setCategory(c);
+              setScreen('ready');
+            }}
+          />
+        )}
+        <BottomNav active={tab} onChange={(t) => setScreen(t === 'settings' ? 'settings' : 'home')} />
+      </>
     );
   }
 
   if (screen === 'ready') {
-    return <Ready category={category} motionDenied={motionDenied} onStart={start} onBack={() => setScreen('home')} />;
+    return (
+      <Ready
+        category={category}
+        motionDenied={motionDenied}
+        invertTilt={settings.invertTilt}
+        onStart={start}
+        onBack={() => setScreen('home')}
+      />
+    );
   }
 
   if (screen === 'game') {
