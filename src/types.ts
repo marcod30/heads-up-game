@@ -6,6 +6,8 @@ export interface Category {
   words: string[];
   /** Solo en mazos combinados: nombres de las categorías que lo forman. */
   includes?: string[];
+  /** Creada por el jugador (se guarda en el móvil). */
+  custom?: boolean;
 }
 
 export type Outcome = 'correct' | 'pass';
