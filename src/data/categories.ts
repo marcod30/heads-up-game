@@ -98,3 +98,20 @@ export const CATEGORIES: Category[] = [
     ],
   },
 ];
+
+/**
+ * Junta varias categorías en un único mazo para la partida.
+ * Las palabras repetidas entre categorías (p. ej. «Tiburón» en Animales y Películas) solo aparecen una vez.
+ */
+export function buildDeck(selected: Category[]): Category {
+  if (selected.length === 1) return selected[0];
+  const words = [...new Set(selected.flatMap((c) => c.words))];
+  return {
+    id: selected.map((c) => c.id).join('+'),
+    name: selected.length === 2 ? selected.map((c) => c.name).join(' + ') : `${selected.length} categorías`,
+    emoji: selected.map((c) => c.emoji).join(''),
+    color: selected[0].color,
+    words,
+    includes: selected.map((c) => c.name),
+  };
+}

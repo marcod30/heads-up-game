@@ -31,8 +31,8 @@ export function saveSettings(s: Settings): void {
 
 /** Texto de cada gesto según si el giro está invertido. */
 export function tiltLabels(invert: boolean): { correct: string; pass: string } {
-  const down = 'Cabeza abajo ↓';
-  const up = 'Cabeza arriba ↑';
+  const down = 'Abajo ↓';
+  const up = 'Arriba ↑';
   return invert ? { correct: up, pass: down } : { correct: down, pass: up };
 }
 
