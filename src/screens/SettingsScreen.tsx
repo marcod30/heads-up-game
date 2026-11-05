@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'react';
 import type { Settings } from '../types';
 import { Switch } from '../components/Switch';
 import { tiltLabels } from '../lib/utils';
@@ -7,11 +8,17 @@ interface Props {
   onChange: (s: Settings) => void;
 }
 
-const DURATIONS = [30, 60, 90, 120];
+// Valores fijos del deslizador (en segundos)
+const MIN = 30;
+const MAX = 150;
+const STEP = 30;
+const DURATIONS = Array.from({ length: (MAX - MIN) / STEP + 1 }, (_, i) => MIN + i * STEP);
 
 export function SettingsScreen({ settings, onChange }: Props) {
   const set = (patch: Partial<Settings>) => onChange({ ...settings, ...patch });
   const labels = tiltLabels(settings.invertTilt);
+  const duration = Math.min(MAX, Math.max(MIN, settings.duration));
+  const pct = ((duration - MIN) / (MAX - MIN)) * 100;
 
   return (
     <main className="screen settings-screen with-nav">
@@ -21,23 +28,32 @@ export function SettingsScreen({ settings, onChange }: Props) {
         <h2 id="g-partida" className="settings-group__title">
           Partida
         </h2>
-        <div className="setting-row">
-          <span className="setting-row__text">
-            <span id="duration-label" className="setting-row__label">
+        <div className="setting-row setting-row--slider">
+          <div className="slider-head">
+            <label htmlFor="duration" className="setting-row__label">
               Duración de la ronda
-            </span>
-          </span>
-          <div className="chips" role="radiogroup" aria-labelledby="duration-label">
+            </label>
+            <output htmlFor="duration" className="slider-value">
+              {duration} s
+            </output>
+          </div>
+          <input
+            id="duration"
+            type="range"
+            className="slider"
+            min={MIN}
+            max={MAX}
+            step={STEP}
+            value={duration}
+            style={{ '--pct': `${pct}%` } as CSSProperties}
+            aria-valuetext={`${duration} segundos`}
+            onChange={(e) => set({ duration: Number(e.target.value) })}
+          />
+          <div className="slider-ticks" aria-hidden>
             {DURATIONS.map((d) => (
-              <button
-                key={d}
-                role="radio"
-                aria-checked={settings.duration === d}
-                className={`chip ${settings.duration === d ? 'chip--on' : ''}`}
-                onClick={() => set({ duration: d })}
-              >
-                {d}s
-              </button>
+              <span key={d} className={d === duration ? 'slider-ticks__on' : ''}>
+                {d}
+              </span>
             ))}
           </div>
         </div>
@@ -66,12 +82,11 @@ export function SettingsScreen({ settings, onChange }: Props) {
 
       <section className="settings-group" aria-labelledby="g-sonido">
         <h2 id="g-sonido" className="settings-group__title">
-          Sonido
+          Audio
         </h2>
         <Switch
           id="sound"
-          label="Efectos de sonido"
-          description="Cuenta atrás, aciertos, pases y final de ronda."
+          label="Sonidos"
           checked={settings.sound}
           onChange={(v) => set({ sound: v })}
         />

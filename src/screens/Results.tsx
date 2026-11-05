@@ -34,7 +34,7 @@ export function Results({ category, results, onAgain, onHome }: Props) {
           Otra ronda
         </button>
         <button className="btn-ghost" onClick={onHome}>
-          Categorías
+          Volver a la página principal
         </button>
       </div>
     </main>
