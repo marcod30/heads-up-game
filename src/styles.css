@@ -129,6 +129,46 @@ button { font: inherit; color: inherit; border: 0; cursor: pointer; background: 
   outline: 3px solid var(--yellow); outline-offset: 2px;
 }
 
+/* Deslizador de duración */
+.setting-row--slider { flex-direction: column; align-items: stretch; gap: 14px; padding-bottom: 12px; }
+.slider-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.slider-value {
+  font-family: var(--display); font-size: 1.5rem; color: var(--yellow);
+  font-variant-numeric: tabular-nums;
+}
+.slider {
+  --thumb: 28px;
+  -webkit-appearance: none; appearance: none;
+  width: 100%; height: var(--thumb); margin: 0; background: transparent; cursor: pointer;
+  touch-action: pan-y;
+}
+.slider::-webkit-slider-runnable-track {
+  height: 8px; border-radius: 999px;
+  background: linear-gradient(to right, var(--yellow) var(--pct), #ffffff22 var(--pct));
+}
+.slider::-moz-range-track { height: 8px; border-radius: 999px; background: #ffffff22; }
+.slider::-moz-range-progress { height: 8px; border-radius: 999px; background: var(--yellow); }
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: var(--thumb); height: var(--thumb); margin-top: calc((8px - var(--thumb)) / 2);
+  border-radius: 50%; background: #fff; border: 0; box-shadow: 0 2px 8px #0006;
+  transition: transform 0.12s ease;
+}
+.slider::-moz-range-thumb {
+  width: var(--thumb); height: var(--thumb); border-radius: 50%; background: #fff; border: 0; box-shadow: 0 2px 8px #0006;
+}
+.slider:active::-webkit-slider-thumb { transform: scale(1.12); }
+.slider:focus-visible { outline: none; }
+.slider:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 4px #ffcf3f66, 0 2px 8px #0006; }
+.slider:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 4px #ffcf3f66, 0 2px 8px #0006; }
+/* Las marcas se alinean con el centro del pulgar en cada valor */
+.slider-ticks { display: flex; justify-content: space-between; padding: 0 14px; margin-top: -6px; }
+.slider-ticks span {
+  width: 0; display: flex; justify-content: center;
+  font-size: 0.8rem; color: var(--muted); font-variant-numeric: tabular-nums;
+}
+.slider-ticks .slider-ticks__on { color: var(--ink); font-weight: 700; }
+
 .tilt-preview {
   display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px;
   padding: 2px 4px; font-size: 0.9rem; color: var(--muted);
