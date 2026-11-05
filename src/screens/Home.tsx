@@ -13,7 +13,7 @@ interface Props {
 export function Home({ categories, selectedIds, wordCount, onToggle, onClear, onPlay }: Props) {
   const count = selectedIds.length;
   return (
-    <main className={`screen home with-nav ${count ? 'home--selecting' : ''}`}>
+    <main className="screen home with-nav">
       <header className="home__header">
         <h1 className="logo">
           ¡Adivina<span>!</span>
@@ -48,17 +48,19 @@ export function Home({ categories, selectedIds, wordCount, onToggle, onClear, on
         })}
       </section>
 
-      <div className={`play-bar ${count ? 'play-bar--visible' : ''}`} aria-hidden={!count}>
-        <button className="play-bar__clear" onClick={onClear} tabIndex={count ? 0 : -1}>
-          Quitar selección
-        </button>
-        <button className="btn-start play-bar__go" onClick={onPlay} disabled={!count} tabIndex={count ? 0 : -1}>
-          Jugar
-          <span className="play-bar__meta">
-            {count === 1 ? '1 categoría' : `${count} categorías`} · {wordCount} palabras
-          </span>
-        </button>
-      </div>
+      {count > 0 && (
+        <div className="play-bar play-bar--visible">
+          <button className="play-bar__clear" onClick={onClear}>
+            Quitar selección
+          </button>
+          <button className="btn-start play-bar__go" onClick={onPlay}>
+            Jugar
+            <span className="play-bar__meta">
+              {count === 1 ? '1 categoría' : `${count} categorías`} · {wordCount} palabras
+            </span>
+          </button>
+        </div>
+      )}
     </main>
   );
 }
